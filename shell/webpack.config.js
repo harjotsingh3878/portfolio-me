@@ -2,9 +2,19 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { ModuleFederationPlugin } = require('webpack').container;
 const path = require('path');
 
+const isProduction = process.env.NODE_ENV === 'production';
+
+// Use Netlify URLs in production, localhost in development
+const getRemoteUrl = (service, port) => {
+  if (isProduction) {
+    return `${service}@https://portfolio-mfe-${service}.netlify.app/remoteEntry.js`;
+  }
+  return `${service}@http://localhost:${port}/remoteEntry.js`;
+};
+
 module.exports = {
   entry: './src/index.js',
-  mode: 'development',
+  mode: isProduction ? 'production' : 'development',
   devServer: {
     port: 3000,
     historyApiFallback: true,
@@ -32,9 +42,9 @@ module.exports = {
     new ModuleFederationPlugin({
       name: 'shell',
       remotes: {
-        transactions: 'transactions@http://localhost:3001/remoteEntry.js',
-        profile: 'profile@http://localhost:3002/remoteEntry.js',
-        notifications: 'notifications@http://localhost:3003/remoteEntry.js',
+        transactions: getRemoteUrl('transactions', 3001),
+        profile: getRemoteUrl('profile', 3002),
+        notifications: getRemoteUrl('notifications', 3003),
       },
       shared: {
         react: { singleton: true, eager: false, requiredVersion: '^18.2.0', strictVersion: false },
