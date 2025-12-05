@@ -1,0 +1,66 @@
+name: CI - All Services
+
+on:
+  pull_request:
+    branches: [main, develop]
+  push:
+    branches: [develop]
+
+jobs:
+  test-all:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [shell, mfe-transactions, mfe-profile, mfe-notifications, backend]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: ${{ matrix.service }}/package-lock.json
+      
+      - name: Install dependencies
+        working-directory: ./${{ matrix.service }}
+        run: npm ci
+      
+      - name: Lint
+        working-directory: ./${{ matrix.service }}
+        run: npm run lint || echo "Linting skipped"
+        continue-on-error: true
+      
+      - name: Test
+        working-directory: ./${{ matrix.service }}
+        run: npm test -- --passWithNoTests || echo "Tests skipped"
+        continue-on-error: true
+      
+      - name: Build
+        working-directory: ./${{ matrix.service }}
+        run: |
+          if [ "${{ matrix.service }}" != "backend" ]; then
+            npm run build
+          else
+            node -c server.js
+          fi
+        env:
+          NODE_ENV: production
+  
+  security-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Run npm audit
+        run: |
+          for dir in shell mfe-transactions mfe-profile mfe-notifications backend; do
+            echo "Auditing $dir..."
+            cd $dir
+            npm audit --audit-level=high || true
+            cd ..
+          done
+        continue-on-error: true

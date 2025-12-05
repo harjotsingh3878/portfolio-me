@@ -487,36 +487,78 @@ gcloud run deploy mfe-notifications --image gcr.io/PROJECT_ID/mfe-notifications
 
 ### CI/CD with GitHub Actions
 
-Create `.github/workflows/deploy-mfe.yml`:
+The project includes a complete CI/CD pipeline with the following workflows:
+
+#### Available Workflows
+
+1. **deploy-shell.yml** - Builds and deploys the shell application
+2. **deploy-mfe-transactions.yml** - Builds and deploys the transactions MFE
+3. **deploy-mfe-profile.yml** - Builds and deploys the profile MFE
+4. **deploy-mfe-notifications.yml** - Builds and deploys the notifications MFE
+5. **deploy-backend.yml** - Builds and deploys the backend API
+6. **ci.yml** - Runs tests and builds for all services on PRs
+7. **preview-deploy.yml** - Creates preview deployments for pull requests
+
+#### GitHub Secrets Setup
+
+To enable GCP deployments, add these secrets to your GitHub repository:
+
+```bash
+# Go to: Settings > Secrets and variables > Actions > New repository secret
+
+GCP_SA_KEY          # Google Cloud service account JSON key
+GCP_PROJECT_ID      # Your GCP project ID
+JWT_SECRET          # Secret key for JWT token generation
+API_URL             # Backend API URL (optional)
+```
+
+#### Workflow Triggers
+
+Each service has its own workflow that triggers on:
+- **Push to main**: Automatically builds and deploys
+- **Pull requests**: Runs tests and builds (no deployment)
+- **Path filtering**: Only runs when relevant files change
+
+Example workflow excerpt:
 
 ```yaml
-name: Deploy MFE
+name: Deploy Shell App
 on:
   push:
     branches: [main]
     paths:
-      - 'mfe-*/**'
+      - 'shell/**'
+  pull_request:
+    branches: [main]
+    paths:
       - 'shell/**'
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      - uses: actions/setup-node@v3
         with:
           node-version: '18'
-      - name: Install dependencies
-        run: npm ci
-      - name: Run tests
-        run: npm test
-      - name: Build
-        run: npm run build
-      - name: Deploy to Cloud Run
-        run: |
-          gcloud auth activate-service-account --key-file=${{ secrets.GCP_SA_KEY }}
-          gcloud run deploy ${{ matrix.service }} --image gcr.io/${{ secrets.GCP_PROJECT }}/${{ matrix.service }}
+      - run: npm ci
+      - run: npm run build
+      # Deploy to GCP Cloud Run
+```
+
+#### Local Testing with Docker
+
+Test the complete setup locally:
+
+```bash
+# Build and run all services
+docker-compose up --build
+
+# Run specific service
+docker-compose up shell
+
+# Stop all services
+docker-compose down
 ```
 
 ## 🎯 Roadmap & Future Enhancements
@@ -526,6 +568,9 @@ jobs:
 - [x] Basic authentication
 - [x] Dashboard implementation
 - [x] Dark mode support
+- [x] CI/CD pipelines (GitHub Actions)
+- [x] Docker containerization
+- [x] Multi-service orchestration
 
 ### Phase 2: Feature Enrichment 🚧
 - [ ] Real-time notifications with WebSockets

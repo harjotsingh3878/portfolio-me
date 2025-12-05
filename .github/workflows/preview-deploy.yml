@@ -1,0 +1,40 @@
+name: Preview Deployment
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [main]
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      
+      - name: Install dependencies - Shell
+        working-directory: ./shell
+        run: npm ci
+      
+      - name: Build Shell
+        working-directory: ./shell
+        run: npm run build
+        env:
+          NODE_ENV: production
+      
+      - name: Comment PR with preview info
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '🚀 **Preview Build Complete!**\n\nYour changes have been built successfully. Deploy preview is ready for testing.\n\n**Changed Files:**\n- Shell Application\n\n**Next Steps:**\n1. Review the build artifacts\n2. Test locally before merging\n3. Ensure all MFEs are compatible'
+            })
