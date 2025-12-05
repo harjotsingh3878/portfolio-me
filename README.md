@@ -1,34 +1,162 @@
 # Portfolio MFE (Micro Frontend)
 
-A modern micro frontend architecture using Module Federation with React, Redux, and Webpack.
+A production-ready micro frontend architecture demonstrating advanced React patterns, Module Federation, and modern web development best practices.
 
-## Project Structure
+## 🎯 Project Overview
+
+This project showcases a scalable micro frontend architecture with:
+* **Overview Dashboard** - Real-time balance tracking and recent transaction summary
+* **Transaction History Micro-Frontend** - Complete transaction management with filtering and sorting
+* **Profile Settings Micro-Frontend** - User profile management and preferences
+* **Notifications Micro-Frontend** - Real-time notification system with read/unread states
+* **Dark/Light Mode** - Full theme support with persistent preferences
+
+## 🏗 Architecture
+
+### Micro Frontend Setup
+* **Shell App (Host)** - Loads remote MFEs dynamically using Webpack Module Federation
+* **3 Independent MFEs**:
+  * **MFE 1: Transactions** - Manages transaction history and analytics (Port 3001)
+  * **MFE 2: User Profile** - Handles user profile settings and preferences (Port 3002)
+  * **MFE 3: Notifications** - Real-time notification center (Port 3003)
+* **Backend**: Node.js + Express REST API (Port 4000)
+* **Database**: PostgreSQL support (optional) - Currently using mock data
+* **State Management**: Redux Toolkit with feature flags support
+* **API Integration**: React Query for efficient data fetching and caching
+
+### Module Federation Benefits
+- Independent deployment of each micro frontend
+- Shared dependencies to reduce bundle size
+- Runtime integration without rebuilding the shell
+- Technology agnostic - each MFE can use different frameworks
+
+## 🚀 Advanced Features & Bonus Skills
+
+### Cloud Deployment
+* **GCP Cloud Run** - Containerized deployment ready
+* Each MFE can be deployed independently
+* Auto-scaling and serverless architecture support
+
+### CI/CD Pipeline
+* **GitHub Actions** - Automated CI/CD for each MFE
+* Separate build and deploy workflows
+* Automated testing and linting
+* Preview deployments for pull requests
+
+### Feature Flags
+* **Harness/LaunchDarkly** integration ready
+* Runtime feature toggling without deployments
+* A/B testing capability
+* Gradual rollout support
+
+### Additional Capabilities
+* **Performance Optimization** - Code splitting and lazy loading
+* **Error Boundaries** - Graceful error handling for each MFE
+* **Monitoring Ready** - Integration points for Sentry, DataDog
+* **Security** - JWT authentication, CORS, secure API communication
+
+## 📁 Project Structure
 
 ```
 portfolio-mfe/
 ├── shell/                 # Main shell application (host)
-├── mfe-notifications/     # Notifications micro frontend
-├── mfe-profile/          # Profile micro frontend
-├── mfe-transactions/     # Transactions micro frontend
-├── backend/              # Backend server
-└── shared/               # Shared utilities and constants
+│   ├── src/
+│   │   ├── components/    # Shared components (Layout, ProtectedRoute)
+│   │   ├── pages/        # Dashboard, Login pages
+│   │   ├── store/        # Redux store and slices
+│   │   ├── context/      # React Context (ThemeContext)
+│   │   └── styles/       # Global and component styles
+│   ├── public/           # Static assets
+│   └── webpack.config.js # Module Federation configuration
+│
+├── mfe-transactions/      # Transactions micro frontend (Port 3001)
+│   ├── src/
+│   │   ├── App.js        # Transaction list and management
+│   │   └── styles.css    # Transaction-specific styles
+│   └── webpack.config.js # Exposes TransactionsApp
+│
+├── mfe-profile/          # Profile micro frontend (Port 3002)
+│   ├── src/
+│   │   ├── App.js        # User profile and settings
+│   │   └── styles.css    # Profile-specific styles
+│   └── webpack.config.js # Exposes ProfileApp
+│
+├── mfe-notifications/    # Notifications micro frontend (Port 3003)
+│   ├── src/
+│   │   ├── App.js        # Notification center
+│   │   └── styles.css    # Notification-specific styles
+│   └── webpack.config.js # Exposes NotificationsApp
+│
+├── backend/              # Backend API server (Port 4000)
+│   ├── server.js         # Express server with REST endpoints
+│   └── package.json      # Backend dependencies
+│
+└── shared/               # Shared utilities and constants (future)
 ```
 
-## Features
+## ✨ Features
 
-- **Module Federation**: Seamless integration of micro frontends
-- **Shared Dependencies**: React, React DOM, and Redux are shared across all modules
-- **Authentication**: Protected routes with auth state management
-- **Theme Management**: Context-based theme switching
-- **Responsive Design**: Mobile-friendly UI components
-- **Redux State Management**: Centralized store with auth and feature flags
+### Core Functionality
+- **Module Federation**: Seamless integration of micro frontends at runtime
+- **Shared Dependencies**: React, React DOM, and Redux shared across all modules
+- **Authentication**: JWT-based auth with protected routes
+- **Theme Management**: Context-based theme switching with localStorage persistence
+- **Responsive Design**: Mobile-first design with breakpoints
+- **Redux State Management**: Centralized store with auth, theme, and feature flags
 
-## Prerequisites
+### User Experience
+- **Dashboard Analytics**: Real-time balance and transaction overview
+- **Transaction Management**: Complete CRUD operations with filtering
+- **Profile Customization**: User settings and preference management
+- **Notification System**: Mark as read, categorization, real-time updates
+- **Dark Mode**: System-wide theme with smooth transitions
+
+## 🛠 Technologies Used
+
+### Frontend
+- **React 18.2.0** - UI library with hooks and concurrent features
+- **Redux Toolkit 2.0.1** - State management with modern Redux patterns
+- **React Router 6.20.0** - Client-side routing
+- **React Query (TanStack Query) 5.14.2** - Server state management and caching
+- **Axios 1.6.0** - HTTP client for API calls
+
+### Build Tools & Module Federation
+- **Webpack 5.89.0** - Module bundler with Module Federation
+- **Babel 7.23.6** - JavaScript transpiler
+- **Webpack Dev Server 4.15.1** - Development server with HMR
+
+### Backend
+- **Node.js** - JavaScript runtime
+- **Express 4.18.2** - Web framework
+- **JSON Web Tokens (JWT) 9.0.2** - Authentication
+- **CORS 2.8.5** - Cross-origin resource sharing
+
+### Styling
+- **CSS3** - Custom styling with CSS variables
+- **CSS Modules** - Scoped styling
+- **Responsive Design** - Mobile-first approach
+
+### DevOps & Deployment (Ready)
+- **Docker** - Containerization
+- **GCP Cloud Run** - Serverless deployment
+- **GitHub Actions** - CI/CD pipelines
+- **PostgreSQL** - Database (optional, mock data currently)
+
+### Future Enhancements
+- **Harness/LaunchDarkly** - Feature flag management
+- **Sentry** - Error tracking and monitoring
+- **Jest & React Testing Library** - Unit and integration testing
+- **Cypress** - End-to-end testing
+
+## 📋 Prerequisites
 
 - Node.js (v14 or higher)
 - npm or yarn
+- Git for version control
+- (Optional) Docker for containerized deployment
+- (Optional) PostgreSQL for database integration
 
-## Installation
+## 📦 Installation
 
 Install dependencies for all modules:
 
@@ -326,6 +454,140 @@ The webpack dev servers support HMR. If changes aren't reflecting:
 - React Router 6.20.0
 - Module Federation
 
-## License
+## 🚢 Deployment
+
+### Docker Deployment
+
+Each micro frontend can be containerized and deployed independently:
+
+```dockerfile
+# Example Dockerfile for shell app
+FROM node:18-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --only=production
+COPY . .
+RUN npm run build
+EXPOSE 3000
+CMD ["npm", "start"]
+```
+
+### GCP Cloud Run Deployment
+
+```bash
+# Build and deploy shell app
+gcloud builds submit --tag gcr.io/PROJECT_ID/shell
+gcloud run deploy shell --image gcr.io/PROJECT_ID/shell --platform managed
+
+# Deploy each MFE independently
+gcloud run deploy mfe-transactions --image gcr.io/PROJECT_ID/mfe-transactions
+gcloud run deploy mfe-profile --image gcr.io/PROJECT_ID/mfe-profile
+gcloud run deploy mfe-notifications --image gcr.io/PROJECT_ID/mfe-notifications
+```
+
+### CI/CD with GitHub Actions
+
+Create `.github/workflows/deploy-mfe.yml`:
+
+```yaml
+name: Deploy MFE
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'mfe-*/**'
+      - 'shell/**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - name: Install dependencies
+        run: npm ci
+      - name: Run tests
+        run: npm test
+      - name: Build
+        run: npm run build
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud auth activate-service-account --key-file=${{ secrets.GCP_SA_KEY }}
+          gcloud run deploy ${{ matrix.service }} --image gcr.io/${{ secrets.GCP_PROJECT }}/${{ matrix.service }}
+```
+
+## 🎯 Roadmap & Future Enhancements
+
+### Phase 1: Foundation ✅
+- [x] Module Federation setup
+- [x] Basic authentication
+- [x] Dashboard implementation
+- [x] Dark mode support
+
+### Phase 2: Feature Enrichment 🚧
+- [ ] Real-time notifications with WebSockets
+- [ ] Advanced filtering and search
+- [ ] Data visualization with charts
+- [ ] Export functionality (CSV, PDF)
+
+### Phase 3: Enterprise Features 📋
+- [ ] Feature flag integration (Harness/LaunchDarkly)
+- [ ] A/B testing framework
+- [ ] Analytics integration (Google Analytics, Mixpanel)
+- [ ] Error tracking (Sentry)
+- [ ] Performance monitoring (DataDog, New Relic)
+
+### Phase 4: Database & Backend 📋
+- [ ] PostgreSQL integration
+- [ ] Database migrations
+- [ ] Advanced API endpoints
+- [ ] Caching layer (Redis)
+- [ ] Rate limiting
+
+### Phase 5: Testing & Quality 📋
+- [ ] Unit tests (Jest)
+- [ ] Integration tests
+- [ ] E2E tests (Cypress)
+- [ ] Performance testing
+- [ ] Accessibility audits (WCAG 2.1)
+
+### Phase 6: DevOps & Production 📋
+- [ ] Full CI/CD pipeline
+- [ ] Infrastructure as Code (Terraform)
+- [ ] Monitoring and alerting
+- [ ] Load testing
+- [ ] Security scanning
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## 📝 License
 
 MIT
+
+## 👨‍💻 Author
+
+**Harjot Singh**
+- GitHub: [@harjotsingh3878](https://github.com/harjotsingh3878)
+- Repository: [portfolio-mfe](https://github.com/harjotsingh3878/portfolio-me)
+
+## 🙏 Acknowledgments
+
+- Webpack Module Federation documentation
+- React community
+- Redux Toolkit team
+- All contributors and supporters
+
+---
+
+**Note**: This is a portfolio project showcasing micro frontend architecture patterns. Feel free to use it as a reference or starting point for your own projects!
